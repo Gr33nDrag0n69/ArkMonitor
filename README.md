@@ -13,9 +13,9 @@ Included features are:
 
 Current Threshold values are 120 seconds for last block age, 12 blocks lag on public nodes and 21 minutes for last forged block age.
 
-If you like it, please vote for me on Ark MainNet for Delegate. :)
+If you like it, please vote for me on Ark MainNet for Delegate or I accept donation. :)
 
-Delegate: gr33ndrag0n / Address: MainNet ??? / TestNet AHmrebSWBwwYQpnbqDZJ1NDoSfZTjCrCkv
+Delegate: gr33ndrag0n / Address: MainNet AUf8qWdgywo9c8P5oD48bz3Dv7ZK5K2giX
 
 ##**Installation**
 
