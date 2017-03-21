@@ -15,7 +15,6 @@
 
 .PARAMETER TestNet
     Switch that is required to run on TestNet instead of MainNet.
-    IMPORTANT: Until Ark MainNet release, this switch is forced by default.
 
 .PARAMETER AsciiBanner
     Show ASCII art banner instead of the basic one line banner.
@@ -41,9 +40,9 @@
     To execute the script in e-mail test mode.
     
 .NOTES
-    Version :   1.0.0.0
+    Version :   1.1
     Author  :   Gr33nDrag0n
-    History :   2017/03/12 - Last Modification
+    History :   2017/03/21 - Last Modification
                 2017/03/11 - Creation
 #>
 
@@ -87,8 +86,7 @@ $Config.Email = @{}
 $Config.Account = @{}
 $Config.Nodes = @()
 $Config.PublicNodes = @()
-$Script:BannerText = 'v1.0 [2017-03-12] by Gr33nDrag0n'
-#$Script:BannerBase64=''
+$Script:BannerText = 'v1.1 [2017-03-21] by Gr33nDrag0n'
 
 #######################################################################################################################
 # Configurable Variables | MANDATORY !!! EDIT THIS SECTION !!!
@@ -126,8 +124,8 @@ $Config.Account.Address   = ''
 # Example
 
 #$Config.Account.Delegate  = 'gr33ndrag0n'
-#$Config.Account.PublicKey = '02936f8524c55bb4e40632ebcde6168ff174b5ce781fe75ec02b86c0fcc55efada'
-#$Config.Account.Address   = 'AHmrebSWBwwYQpnbqDZJ1NDoSfZTjCrCkv'
+#$Config.Account.PublicKey = '03fe97236cc043ebb977c9ba79eee808da0615d85681185e997592347846444c61'
+#$Config.Account.Address   = 'AUf8qWdgywo9c8P5oD48bz3Dv7ZK5K2giX'
 
 ### Node(s) ###=======================================================================================
 
@@ -135,13 +133,9 @@ $Config.Nodes += @{Name='';URI=''}
 
 # Example
 
-#$Config.Nodes += @{Name='test01.arknode.net';URI='http://test01.arknode.net:4000/'}
-#$Config.Nodes += @{Name='test02.arknode.net';URI='http://test02.arknode.net:4000/'}
+#$Config.Nodes += @{Name='main.arknode.net';URI='http://main.arknode.net:4001/'}
 
 ### Public Node(s) ###=======================================================================================
-
-# TODO: Remove bypass after MainNet launch.
-$TestNet = $True
 
 if( $TestNet )
 {
@@ -150,22 +144,16 @@ if( $TestNet )
   $Config.PublicNodes += @{Name='Ark.io Seed 3';URI='http://5.39.9.247:4000/'}
   $Config.PublicNodes += @{Name='Ark.io Seed 4';URI='http://5.39.9.248:4000/'}
   $Config.PublicNodes += @{Name='Ark.io Seed 5';URI='http://5.39.9.249:4000/'}
-  
-  #$Config.PublicNodes += @{Name='ArkNode.net';URI='http://testnet-explorer.arknode.net:4000/'}
-  #$Config.PublicNodes += @{Name='ArkNode.net';URI='http://testnet-snapshot.arknode.net:4000/'}
 }
 else
 {
-  <#
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://???/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://???/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://???/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 4';URI='http://???/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 5';URI='http://???/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://5.39.9.240:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://37.59.129.160:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://193.70.72.80:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 4';URI='http://167.114.29.37:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 5';URI='http://137.74.79.168:4001/'}
   
-  $Config.PublicNodes += @{Name='ArkNode.net';URI='http://explorer.arknode.net:???/'}
-  $Config.PublicNodes += @{Name='ArkNode.net';URI='http://snapshot.arknode.net:???/'}
-  #>
+  #$Config.PublicNodes += @{Name='ArkNode.net';URI='http://explorer.arknode.net:4001/'}
 }
 
 ###########################################################################################################################################
@@ -443,7 +431,14 @@ Function CheckNodeLastBlockAge {
         $Private:Block = Get-ArkBlockList -URI $URI -Height $BlockHeight
         if( $Block -ne $NULL )
         {
-            $Private:GenesisTimestamp = Get-Date "5/24/2016 5:00 PM"
+			if( $TestNet )
+			{
+				$Private:GenesisTimestamp = Get-Date "5/24/2016 5:00 PM"
+			}
+			else
+			{
+				$Private:GenesisTimestamp = Get-Date "3/21/2017 1:00 PM"
+			}
             $BlockAgeInSeconds = [math]::Round( $( (Get-date)-([timezone]::CurrentTimeZone.ToLocalTime($GenesisTimestamp.Addseconds($Block.timestamp))) ).TotalSeconds )
 
             if( $BlockAgeInSeconds -ge $ErrorThresholdInSeconds ) { $Message = "ERROR: Node Block Age is > $ErrorThresholdInSeconds sec. Value: $BlockAgeInSeconds sec." }
@@ -479,7 +474,14 @@ Param(
     if( $LastForgedBlock -ne $NULL )
     {
         $BlockHeight = $LastForgedBlock.Height
-        $Private:GenesisTimestamp = Get-Date "5/24/2016 5:00 PM"
+		if( $TestNet )
+		{
+			$Private:GenesisTimestamp = Get-Date "5/24/2016 5:00 PM"
+		}
+		else
+		{
+			$Private:GenesisTimestamp = Get-Date "3/21/2017 1:00 PM"
+		}
         $BlockAgeInMinutes = [math]::Round( $( (Get-date)-([timezone]::CurrentTimeZone.ToLocalTime($GenesisTimestamp.Addseconds($LastForgedBlock.timestamp))) ).TotalMinutes )
         
         if( $BlockAgeInMinutes -ge $ErrorThresholdInMinutes ) { $Message = "ERROR: $Net Delegate $($Account.Delegate) Last Forged Block Age is > $ErrorThresholdInMinutes minutes. Value: $BlockAgeInMinutes minutes." }
