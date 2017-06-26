@@ -13,8 +13,8 @@
 .PARAMETER ShowPublicKey
     Internal Helper Tool to find the public key associated to an address.
 
-.PARAMETER TestNet
-    Switch that is required to run on TestNet instead of MainNet.
+.PARAMETER DevNet
+    Switch that is required to run on DevNet instead of MainNet.
 
 .PARAMETER AsciiBanner
     Show ASCII art banner instead of the basic one line banner.
@@ -25,9 +25,9 @@
     MainNet normal run built to be executed by a scheduled task.
     
 .EXAMPLE
-    .\ArkMonitor.ps1 -TestNet
+    .\ArkMonitor.ps1 -DevNet
     
-    TestNet normal run built to be executed by a scheduled task.
+    DevNet normal run built to be executed by a scheduled task.
     
 .EXAMPLE
     .\ArkMonitor.ps1 -ShowMessage -AsciiBanner
@@ -40,9 +40,9 @@
     To execute the script in e-mail test mode.
     
 .NOTES
-    Version :   1.1
+    Version :   1.2
     Author  :   Gr33nDrag0n
-    History :   2017/03/21 - Last Modification
+    History :   2017/06/26 - Last Modification
                 2017/03/11 - Creation
 #>
 
@@ -62,7 +62,7 @@ Param(
     [switch] $ShowPublicKey,
     
     [parameter( Mandatory=$False )]
-    [switch] $TestNet,
+    [switch] $DevNet,
     
     [parameter( Mandatory=$False )]
     [switch] $AsciiBanner
@@ -86,7 +86,7 @@ $Config.Email = @{}
 $Config.Account = @{}
 $Config.Nodes = @()
 $Config.PublicNodes = @()
-$Script:BannerText = 'v1.1 [2017-03-21] by Gr33nDrag0n'
+$Script:BannerText = 'v1.2 [2017-06-26] by Gr33nDrag0n'
 
 #######################################################################################################################
 # Configurable Variables | MANDATORY !!! EDIT THIS SECTION !!!
@@ -131,30 +131,41 @@ $Config.Account.Address   = ''
 
 $Config.Nodes += @{Name='';URI=''}
 
-# Example
-
+# MainNet Example
 #$Config.Nodes += @{Name='main.arknode.net';URI='http://main.arknode.net:4001/'}
+
+# DevNet Example
+#$Config.Nodes += @{Name='dev.arknode.net';URI='http://dev.arknode.net:4002/'}
 
 
 ### Public Node(s) ###=======================================================================================
 
-if( $TestNet )
+if( $DevNet )
 {
-  $Config.PublicNodes += @{Name='Ark.io Seed 1';URI='http://5.39.9.245:4000/'}
-  $Config.PublicNodes += @{Name='Ark.io Seed 2';URI='http://5.39.9.246:4000/'}
-  $Config.PublicNodes += @{Name='Ark.io Seed 3';URI='http://5.39.9.247:4000/'}
-  $Config.PublicNodes += @{Name='Ark.io Seed 4';URI='http://5.39.9.248:4000/'}
-  $Config.PublicNodes += @{Name='Ark.io Seed 5';URI='http://5.39.9.249:4000/'}
+  # DevNet (From official 'config.devnet.json' file.)
+  
+  $Config.PublicNodes += @{Name='Ark.io DevNet Seed 1';URI='http://167.114.29.51:4002/'}
+  $Config.PublicNodes += @{Name='Ark.io DevNet Seed 2';URI='http://167.114.29.52:4002/'}
+  $Config.PublicNodes += @{Name='Ark.io DevNet Seed 3';URI='http://167.114.29.53:4002/'}
+  $Config.PublicNodes += @{Name='Ark.io DevNet Seed 4';URI='http://167.114.29.54:4002/'}
+  $Config.PublicNodes += @{Name='Ark.io DevNet Seed 5';URI='http://167.114.29.55:4002/'}
 }
 else
 {
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://5.39.9.240:4001/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://37.59.129.160:4001/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://193.70.72.80:4001/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 4';URI='http://167.114.29.37:4001/'}
-  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 5';URI='http://137.74.79.168:4001/'}
+  # MainNet (From official 'config.mainnet.json' file.)
   
-  #$Config.PublicNodes += @{Name='ArkNode.net';URI='http://explorer.arknode.net:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://5.39.9.240:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://5.39.9.241:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://5.39.9.242:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 1';URI='http://5.39.9.243:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://37.59.129.160:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://37.59.129.161:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://37.59.129.162:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 2';URI='http://37.59.129.163:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://193.70.72.80:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://193.70.72.81:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://193.70.72.82:4001/'}
+  $Config.PublicNodes += @{Name='Ark.io MainNet Seed 3';URI='http://193.70.72.83:4001/'}
 }
 
 ###########################################################################################################################################
@@ -432,9 +443,9 @@ Function CheckNodeLastBlockAge {
         $Private:Block = Get-ArkBlockList -URI $URI -Height $BlockHeight
         if( $Block -ne $NULL )
         {
-			if( $TestNet )
+			if( $DevNet )
 			{
-				$Private:GenesisTimestamp = Get-Date "5/24/2016 5:00 PM"
+				$Private:GenesisTimestamp = Get-Date "3/21/2017 1:00 PM"
 			}
 			else
 			{
@@ -475,9 +486,9 @@ Param(
     if( $LastForgedBlock -ne $NULL )
     {
         $BlockHeight = $LastForgedBlock.Height
-		if( $TestNet )
+		if( $DevNet )
 		{
-			$Private:GenesisTimestamp = Get-Date "5/24/2016 5:00 PM"
+			$Private:GenesisTimestamp = Get-Date "3/21/2017 1:00 PM"
 		}
 		else
 		{
@@ -488,7 +499,7 @@ Param(
         if( $BlockAgeInMinutes -ge $ErrorThresholdInMinutes ) { $Message = "ERROR: $Net Delegate $($Account.Delegate) Last Forged Block Age is > $ErrorThresholdInMinutes minutes. Value: $BlockAgeInMinutes minutes." }
         else { $Message = "SUCCESS: $Net Delegate $($Account.Delegate) Last Forged Block Age is $BlockAgeInMinutes minutes." }
     }
-    else { $Message = "ERROR: Get-ArkBlockList Result is NULL. Verify you are part of the 101 currently Active Delegate." }
+    else { $Message = "ERROR: Get-ArkBlockList Result is NULL. Verify you are part of the 51 currently Active Delegate." }
 
     $Message
 }
@@ -714,7 +725,7 @@ Remove-Variable -Name ShowPublicKey -ErrorAction SilentlyContinue
 Remove-Variable -Name TopHeight -ErrorAction SilentlyContinue
 Remove-Variable -Name EmailHeader -ErrorAction SilentlyContinue
 Remove-Variable -Name MessageHeader -ErrorAction SilentlyContinue
-Remove-Variable -Name TestNet -ErrorAction SilentlyContinue
+Remove-Variable -Name DevNet -ErrorAction SilentlyContinue
 
 $Private:CurrentSessionVariable_List = Get-Variable | Select-Object -ExpandProperty Name
 
